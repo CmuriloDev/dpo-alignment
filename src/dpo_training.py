@@ -2,9 +2,8 @@ import torch
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import DPOTrainer
-from trl import DPOConfig
 
-MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+MODEL_ID = "sshleifer/tiny-gpt2"  
 DATA_PATH = "data/preferences.jsonl"
 OUTPUT_DIR = "artifacts/dpo-model"
 
@@ -23,21 +22,17 @@ def main():
         num_train_epochs=1,
         learning_rate=5e-5,
         logging_steps=1,
-        optim="paged_adamw_32bit",
+        optim="adamw_torch",  
         report_to="none"
     )
 
-    dpo_config = DPOConfig(
-    beta=0.1
-    )
-
     trainer = DPOTrainer(
-    model=model,
-    ref_model=ref_model,
-    args=training_args,
-    train_dataset=dataset,
-    tokenizer=tokenizer,
-    dpo_config=dpo_config
+        model=model,
+        ref_model=ref_model,
+        args=training_args,
+        train_dataset=dataset,
+        tokenizer=tokenizer,
+        beta=0.1
     )
 
     trainer.train()
