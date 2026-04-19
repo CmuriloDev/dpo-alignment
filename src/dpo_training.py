@@ -2,6 +2,7 @@ import torch
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import DPOTrainer
+from trl import DPOConfig
 
 MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 DATA_PATH = "data/preferences.jsonl"
@@ -26,13 +27,17 @@ def main():
         report_to="none"
     )
 
+    dpo_config = DPOConfig(
+    beta=0.1
+    )
+
     trainer = DPOTrainer(
-        model=model,
-        ref_model=ref_model,
-        args=training_args,
-        beta=0.1,
-        train_dataset=dataset,
-        tokenizer=tokenizer,
+    model=model,
+    ref_model=ref_model,
+    args=training_args,
+    train_dataset=dataset,
+    tokenizer=tokenizer,
+    dpo_config=dpo_config
     )
 
     trainer.train()
